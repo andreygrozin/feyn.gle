@@ -101,7 +101,7 @@ sub Feyn x y
     fy = ypos()
     x = x-fx
     y = y-fy
-    fl = sqrt(sqr(x)+sqr(y))
+    fl = sqrt(x^2+y^2)
     if fl<fe then
         fl = -1
     else ! finding slope
@@ -150,7 +150,7 @@ sub FeynC x y
     fy = y
     fx1 = ffx-x
     fy1 = ffy-y
-    fr = sqrt(sqr(fx1)+sqr(fy1))
+    fr = sqrt(fx1^2+fy1^2)
     fl = 360
     fc = CircleD
     ! finding slope center - initial
@@ -192,7 +192,7 @@ sub Feyn2 xx yy x y
     fsx = xpos()
     fsy = ypos()
     fcirc = -1
-    if sqr(x-fsx)+sqr(y-fsy)<sqr(fe) then
+    if (x-fsx)^2+(y-fsy)^2<fe^2 then
         ! circle
         fcirc = 1
         @FeynC 0.5*(fsx+xx) 0.5*(fsy+yy)
@@ -206,15 +206,15 @@ sub Feyn2 xx yy x y
         fr = fx1*fy2-fx2*fy1
         fxx = xx
         fyy = yy
-        if abs(fr)<sqr(fe) then
+        if abs(fr)<fe^2 then
             fr = -1
         else ! finding center
             fc = -sgn(fr)
-            fx = xx+0.5/fr*(sqr(fy1)*fy2-sqr(fy2)*fy1+sqr(fx1)*fy2-sqr(fx2)*fy1)
-            fy = yy+0.5/fr*(sqr(fx2)*fx1-sqr(fx1)*fx2+sqr(fy2)*fx1-sqr(fy1)*fx2)
+            fx = xx+0.5/fr*(fy1^2*fy2-fy2^2*fy1+fx1^2*fy2-fx2^2*fy1)
+            fy = yy+0.5/fr*(fx2^2*fx1-fx1^2*fx2+fy2^2*fx1-fy1^2*fx2)
             fx1 = fsx-fx
             fy1 = fsy-fy
-            fr = sqrt(sqr(fx1)+sqr(fy1))
+            fr = sqrt(fx1^2+fy1^2)
             ! finding slope center - initial
             if abs(fy1)<abs(fx1) then
                 if fx1>0 then
@@ -232,8 +232,8 @@ sub Feyn2 xx yy x y
             ! finding angular length
             fx2 = x-fx
             fy2 = y-fy
-            f1 = (fx1*fy2-fx2*fy1)/sqr(fr)*fc ! sin
-            f2 = (fx1*fx2+fy1*fy2)/sqr(fr)    ! cos
+            f1 = (fx1*fy2-fx2*fy1)/fr^2*fc    ! sin
+            f2 = (fx1*fx2+fy1*fy2)/fr^2       ! cos
             if f1<0 then                      ! pi .. 2*pi
                 if abs(f1)>abs(f2) then       ! 5*pi/4 .. 7*pi/4
                     if f2<0 then              ! 5*pi/4 .. 3*pi/2
@@ -265,7 +265,7 @@ sub Feyn2 xx yy x y
             end if
 	    if Gap>0 then
 		fg1 = fa+fc*Gap*fl
-		fg2 = 180*fg2*GapL/(pi*fr)
+		fg2 = 180*GapL/(pi*fr)
 		amove fx fy
 		begin origin
 		    begin rotate fg1
@@ -1316,7 +1316,7 @@ sub Photon2 xx yy x y
     end if
 end sub
 
-! Double photo line
+! Double photon line
 sub DPhoton x y
     @Feyn x y
     if fl>0 then
@@ -1632,7 +1632,7 @@ sub DPhoton0
     end origin
 end sub
 
-! Double photo line - circle
+! Double photon line - circle
 sub DPhotonC x y
     @FeynC x y
     if fr<PhotonA+DoubleA+fe then
@@ -1650,7 +1650,7 @@ sub DPhotonC x y
     end if
 end sub
 
-! Double photo line - arc
+! Double photon line - arc
 sub DPhoton2 xx yy x y
     @Feyn2 xx yy x y
     if fcirc>0 then
@@ -1945,8 +1945,8 @@ PatternL = DefPatternL ! Period length
 PatternB = 0
 PatternE = 0
 PatternN = 0
-DotsPatternB = 0 ! > 0: if a dot is present at the beginning of the line, draw it
-DotsPatternE = 0 ! > 0: if a dot is present at the end of the line, draw it
+DotsPatternB = 1 ! > 0: if a dot is present at the beginning of the line, draw it
+DotsPatternE = 1 ! > 0: if a dot is present at the end of the line, draw it
 DashPattern = 0
 DotsPattern = 0
 
@@ -2343,7 +2343,6 @@ DefArrowL = 0.2
 DefArrowA = 0.075
 ArrowL = DefArrowL ! length
 ArrowA = DefArrowA ! amplitude
-ArrowD = 0         ! displacement
 
 ! Arrow on the last line, fraction f from the beginning
 sub Arrow f
@@ -2354,11 +2353,11 @@ sub Arrow f
             if fr>0 then
                 f1 = fa+fc*(f*fl+90)
                 fx1 = 0
-                fy1 = ArrowD-fc*fr
+                fy1 = -fc*fr
             else
                 f1 = fa
                 fx1 = f*fl
-                fy1 = ArrowD
+                fy1 = 0
             end if
             begin rotate f1
                 amove fx1 fy1
@@ -2509,13 +2508,13 @@ sub DMom2 f
         else
             f0 = 360/pi*MomL/f2      ! angular length
             f1 = fa+fc*(f*fl+0.5*f0) ! slope center -> end of the arrow
-            f3 = sqr(ArrowA*(f2-DoubleA))-sqr(ArrowL)*DoubleA*(2*f2-DoubleA)
+            f3 = (ArrowA*(f2-DoubleA))^2-ArrowL^2*DoubleA*(2*f2-DoubleA)
             if f3<0 then
                 @DMom f
             else
-                f4 = sqr(ArrowA*(f2+DoubleA))+sqr(ArrowL)*DoubleA*(2*f2+DoubleA)
-                f3 = 180/pi*asin(ArrowL*(f2*ArrowA-sqrt(f3))/(sqr(ArrowL)+sqr(ArrowA))/(f2-DoubleA))
-                f4 = 180/pi*asin(ArrowL*(sqrt(f4)-f2*ArrowA)/(sqr(ArrowL)+sqr(ArrowA))/(f2+DoubleA))
+                f4 = (ArrowA*(f2+DoubleA))^2+ArrowL^2*DoubleA*(2*f2+DoubleA)
+                f3 = 180/pi*asin(ArrowL*(f2*ArrowA-sqrt(f3))/(ArrowL^2+ArrowA^2)/(f2-DoubleA))
+                f4 = 180/pi*asin(ArrowL*(sqrt(f4)-f2*ArrowA)/(ArrowL^2+ArrowA^2)/(f2+DoubleA))
                 gsave
                 amove fx fy
                 begin origin
