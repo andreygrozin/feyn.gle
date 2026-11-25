@@ -41,6 +41,8 @@
 ! Drawing Feynman diagrams with GLE,
 ! Comp. Phys. Commun. 283 (2023) 108590
 ! [https://arxiv.org/abs/2207.01351]
+! new features in the version 1.2:
+! https://arxiv.org/abs/2611.29526
 
 ! variable names beginning with F are reserved for internal use
 
