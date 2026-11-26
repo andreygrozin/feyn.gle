@@ -1,3 +1,5 @@
+The package feyn.gle for drawing Feynman diagrams
+written in the language [GLE](https://github.com/vlabella/GLE/).
 Documentation:
 Drawing Feynman diagrams with GLE,
 [Comp. Phys. Commun. 283 (2023) 108590](https://www.sciencedirect.com/science/article/abs/pii/S0010465522003095?via%3Dihub),
